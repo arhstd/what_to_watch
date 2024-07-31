@@ -2,6 +2,7 @@ from flask import jsonify, request
 
 from . import app, db
 from .models import Opinion
+from .views import random_opinion
 
 
 # Явно разрешаем метод GET:
@@ -16,7 +17,7 @@ def get_opinion(id):
 @app.route('/api/opinions/<int:id>/', methods=['PATCH'])
 def update_opinion(id):
     data = request.get_json()
-    # Если метод get_or_404 не найдёт указанный ID, 
+    # Если метод get_or_404 не найдёт указанный ID,
     # то он выбросит исключение 404:
     opinion = Opinion.query.get_or_404(id)
     opinion.title = data.get('title', opinion.title)
@@ -63,3 +64,9 @@ def add_opinion():
     # Сохранение изменений:
     db.session.commit()
     return jsonify({'opinion': opinion.to_dict()}), 201
+
+
+@app.route('/api/get-random-opinion/', methods=['GET'])
+def get_random_opinion():
+    opinion = random_opinion()
+    return jsonify({'opinion': opinion.to_dict()}), 200
